@@ -94,11 +94,7 @@ major_date <- floods %>%
   summarize(date=min(dateF, na.rm = TRUE))
 
 
-#Cite: https://www.geeksforgeeks.org/merge-dataframes-by-column-names-in-r/
-#forgot how to merge data frames, this is probably not the best way to do it
-#and also isn't necessary to answer the question but made it more convenient
-
-turning_points1 <- merge("action" = action_date, "flood" = flood_date,
+turning_points1 <- full_join(action_date, flood_date,
                         by="names")
 
 turning_points2 <- merge(moderate_date, major_date, 
