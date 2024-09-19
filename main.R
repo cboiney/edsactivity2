@@ -7,12 +7,19 @@ library(lubridate)
 streamH <- read.csv("/cloud/project/stream_gauge.csv")
 siteinfo <- read.csv("/cloud/project/site_info.csv")
 
-#parsing our data
+#parsing our data (P2)
 streamH$dateF <- ymd_hm(streamH$datetime,
                         tz="America/New_York")
 
-#join site info to stream gauge height
+#join site info to stream gauge height (P1)
 floods <- full_join(streamH, siteinfo, by="siteID")
+
+#testing if type of join matters
+floods1 <- left_join(streamH, siteinfo, by="siteID")
+floods2 <- right_join(streamH, siteinfo, by="siteID")
+#floods and both of these data frames are identical, type of join doesn't matter
+#because streamH and siteinfo line up perfectly (no missing values and siteID
+#matches row by row)
 
 peace <- floods %>% 
   filter(siteID == 2295637)
@@ -27,6 +34,7 @@ max.ht <- floods %>%
   summarize(max_ht_ft=max(gheight.ft, na.rm = TRUE),
             mean_ht_ft=mean(gheight.ft, na.rm = TRUE))
 
+#(P3)
 earliest_days <- floods %>%
   filter(gheight.ft > flood.ft) %>%
   group_by(names) %>%
@@ -73,6 +81,7 @@ plot(trilby$dateF, trilby$gheight.ft, type ="l", main = "Trilby Heights",
 
 #q2
 
+#for each flood category, taking earliest date at which that height was exceeded
 action_date <- floods %>%
   group_by(names) %>%
   filter(gheight.ft > action.ft) %>%
@@ -97,10 +106,11 @@ major_date <- floods %>%
 turning_points1 <- full_join(action_date, flood_date,
                         by="names")
 
-turning_points2 <- merge(moderate_date, major_date, 
+turning_points2 <- full_join(moderate_date, major_date, 
                          by="names")
 
-turning_points <- merge(turning_points1, turning_points2, 
+#combining all 4 first occurrences (turning points) into one data frame
+turning_points <- full_join(turning_points1, turning_points2, 
                         by="names")
 
 #Cite: https://www.datanovia.com/en/lessons/rename-data-frame-columns-in-r/#google_vignette
@@ -114,8 +124,14 @@ names(turning_points)[5] = "major"
 
 #q3
 
+#Looking at the rows for each river where stream gauge exceeded the requirements
+#for a major flood
 most_severe <- floods %>%
   group_by(names) %>%
   filter(gheight.ft > major.ft) %>%
-  summarize(diff = max(gheight.ft, na.rm = TRUE),
+  summarize(peak = max(gheight.ft, na.rm = TRUE),
             major = max(major.ft, na.rm = TRUE))
+
+most_severe$diff <- most_severe$peak - most_severe$major
+
+

@@ -1,0 +1,25 @@
+---
+title: "Slice Demo"
+format: html
+editor: visual
+---
+
+## Demo
+
+The **slice** function allows us to extract specific rows from a dataset based on their indices and/or values.
+
+```{r}
+library(dplyr)
+library(lubridate)
+
+
+```
+
+You can add options to executable code like this
+
+```{r}
+#| echo: false
+2 * 2
+```
+
+The `echo: false` option disables the printing of code (only output is displayed).
